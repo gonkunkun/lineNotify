@@ -1,6 +1,32 @@
 function postContent() {
   // 問題年度をランダムに選択
-  var seasonList = ["01_aki", "31_haru", "30_aki",  "30_haru"];
+  const seasonList = ["01_aki", "31_haru", "30_aki",  "30_haru"];
+  // 一度のメッセージに貼り付ける問題数
+  const quantity   = 3;
+  var content;
+  var contentList = [];
+  
+  // 問題リストを作成
+  for (var i = 0; i < quantity; i++) {
+    content = "";
+    content = returnOneQuestion(seasonList);
+    contentList.push(content);
+  }
+
+  var content = "\n";  
+  // LINEに出力するコンテンツを作成
+  for (var i = 0; i < contentList.length; i++) {
+    // 文字数が1000文字を超える場合には、メッセージに2問だけ載せる
+    if (994 <= (content.length + contentList[i])) {
+      break;
+    }
+    content += "[" + (i + 1) + "] " + contentList[i] + "\n\n\n";
+  }
+  
+  sendPostContent(content);
+}
+
+function returnOneQuestion(seasonList) {
   var season = seasonList[Math.floor(Math.random() * seasonList.length)];
 
   // 乱数で問題作成
@@ -9,10 +35,9 @@ function postContent() {
   // スクレイピング
   const base = "https://www.fe-siken.com/kakomon/" + season + "/";
   const url = base + "q" + number + ".html";
-  //const url = "https://www.fe-siken.com/kakomon/30_haru/q62.html"
+
   var html = UrlFetchApp.fetch(url).getContentText('Shift_JIS');
   var content = "";
-  //Logger.log(url)
 
   // モバイル版URLを作成
   const baseMobile = "https://www.fe-siken.com/s/kakomon/" + season + "/";
@@ -29,10 +54,10 @@ function postContent() {
   // 回答を取得
   
   // 解説を取得
-
   
   content += "続き↓\n" + urlMobile + "\n\n";
-  sendPostContent(content);
+
+  return content;  
 }
 
 
@@ -66,7 +91,7 @@ function parseChoices(html) {
 }
 
 function sendPostContent(content) {
-  var token = ['input_own_token'];
+  var token = ['fixMe'];
   var options = {
     "method": "post",
     "payload" : {"message": content },
