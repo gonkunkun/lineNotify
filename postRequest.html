@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8" />
+    <title>タイトル</title>
+</head>
+
+<body>
+    <main>
+        <p>テストページ</p>
+        <button onclick="postContent();">post</button>
+        
+    </main>
+</body>
+</html>
+<script type="text/javascript">
+    function postContent() {
+        console.log('test');
+        // 問題年度をランダムに選択
+        var seasonList = ["01_aki", "31_haru", "30_aki", "30_haru"];
+        var season = seasonList[Math.floor(Math.random() * seasonList.length)];
+
+        // 乱数で問題作成
+        var number = Math.ceil(Math.random() * 80);
+
+        // スクレイピング
+        const base = "https://www.fe-siken.com/kakomon/" + season + "/";
+        const url = base + "q" + number + ".html";
+        var html = UrlFetchApp.fetch(url).getContentText('Shift_JIS');
+        var content = "";
+
+        // 問題文を取得
+        var itemRegexp = new RegExp(/<div>.+<\/div>/g);
+        var item = html.match(itemRegexp);
+        var question = item[0].replace(/.*<div>/, '').replace(/<\/div.*/, '').replace(/<.*>/g, '');
+        content += question + "\n\n";
+
+        const baseMobile = "https://www.fe-siken.com/s/kakomon/" + season + "/";
+        const urlMobile = baseMobile + "q" + number + ".html";
+
+        content += "続き↓\n" + urlMobile;
+        console.log(content);
+        // sendPostContent(content);
+    }
+</script>
